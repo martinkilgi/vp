@@ -11,7 +11,40 @@ if ($hournow < 7) {
 if ($hournow >= 8 and $hournow < 18) {
 	$partofday = "akadeemilise aktiivsuse aeg";
 }
+
+//vaatame semestri kulgemist
+$semesterstart = new DateTime("2020-8-31");
+$semesterend = new DateTime("2020-12-13");
+// selgitame välja nende vahe ehk erinevuse 
+$semesterduration = $semesterstart->diff($semesterend);
+//leiame selle päevade arvuna
+$semesterdurationdays = $semesterduration->format("%r%a");
+
+//tänane päev 
+$today = new DateTime("now");
+$semestrilopuni = $today->diff($semesterend);
+$semestrilopuni = $semestrilopuni->format("%r%a");
+
+$paevikokku = 105;
+$paevilainud = $semesterstart->diff($today);
+$paevilainud = $paevilainud->format("%a");
+$paevadprotsentides = $paevilainud / $paevikokku * 100;
+$paevadprotsentides = round($paevadprotsentides, 2);
+
+if ($paevilainud <= $paevikokku) {
+  $semesterstatus = "Hetkel veel semester käib.";
+} elseif ($semestrilopuni < 0) {
+  $semesterstatus = "Semester pole veel hakanud";
+}
+else {
+  $semesterstatus = "Semester on läbi.";
+}
+//if($fromsemesterstartdays < 0) {semester pole peale hakanud)}
+//mitu protsenti õppetööst on tehtud (päevi kokku 105)
+
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="et">
@@ -27,7 +60,10 @@ if ($hournow >= 8 and $hournow < 18) {
   <p id="teine">Leht on loodud veebiprogrammeerimise raames <a href="https://www.tlu.ee" target="_blank">Tallinna Ülikooli</a> Digitehnoloogiate instituudis.</p>
   <p id="kolmas">Siit saad minna otse <a href="https://www.tlu.ee/infotehnoloogiaosakond" target="_blank">TLÜ infotehnoloogiaosakonda.</a></p>
   <p> Lehe avamise hetkel oli: <?php echo $fulltimenow; ?>.</p>
-  <p><?php echo "Parajasti on " .$partofday .".";  ?></p>
+  <p id="semester"><?php echo "Parajasti on " .$partofday .".";  ?></p>
+  <p id="semester"><?php echo "Semestri lõpuni on veel " .$semestrilopuni ." päeva."; ?></p>
+  <p id="semester"><?php echo "Semestrist on läbitud " .$paevadprotsentides ." protsenti."; ?></p>
+  <p id="semester"><?php echo $semesterstatus; ?></P>
   <img src="pics/Mountain.jpg" alt="Mäed" id="pic1">
   <img src="pics/mäed.jfif" alt="Veel suuremad mäed" id="pic2">
   <img src="pics/Magi.jpg" alt="Suur mägi" id="pic3">

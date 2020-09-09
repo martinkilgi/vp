@@ -3,6 +3,11 @@ body {
     background-color: lightblue;
 }
 
+#semester {
+    font-size: 50px;
+    color:  red;
+}
+
 #pic1 {
     width: 500px;
     height: 300px;
@@ -22,6 +27,7 @@ body {
 }
 
 h1 {
+    
     font-family: courier;
     color: red;
     text-align: center;
