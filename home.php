@@ -31,6 +31,7 @@ $paevilainud = $paevilainud->format("%a");
 $paevadprotsentides = $paevilainud / $paevikokku * 100;
 $paevadprotsentides = round($paevadprotsentides, 2);
 
+
 if ($paevilainud <= $paevikokku) {
   $semesterstatus = "Hetkel veel semester käib.";
 } elseif ($semestrilopuni < 0) {
@@ -39,6 +40,13 @@ if ($paevilainud <= $paevikokku) {
 else {
   $semesterstatus = "Semester on läbi.";
 }
+
+if ($paevadprotsentides <= 0) {
+  $paevadprotsentides = "Semester pole veel hakanud";
+} elseif ($paevadprotsentides >= 100) {
+  $paevadprotsentides = "Semester on läbi";
+}
+
 //if($fromsemesterstartdays < 0) {semester pole peale hakanud)}
 //mitu protsenti õppetööst on tehtud (päevi kokku 105)
 
@@ -62,7 +70,7 @@ else {
   <p> Lehe avamise hetkel oli: <?php echo $fulltimenow; ?>.</p>
   <p id="semester"><?php echo "Parajasti on " .$partofday .".";  ?></p>
   <p id="semester"><?php echo "Semestri lõpuni on veel " .$semestrilopuni ." päeva."; ?></p>
-  <p id="semester"><?php echo "Semestrist on läbitud " .$paevadprotsentides ." protsenti."; ?></p>
+  <p id="semester"><?php echo "Semestrist on läbitud " .$paevadprotsentides ." protsenti ehk " .$paevilainud ." päeva."; ?></p>
   <p id="semester"><?php echo $semesterstatus; ?></P>
   <img src="pics/Mountain.jpg" alt="Mäed" id="pic1">
   <img src="pics/mäed.jfif" alt="Veel suuremad mäed" id="pic2">
