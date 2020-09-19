@@ -33,6 +33,7 @@ $conn->close();
 $username = "Martin Kilgi";
 $fulltimenow = date("d.m.Y H:i:s");
 $hournow = date("H");
+$kellpraegu = date("H:i:s");
 $partofday = "lihtsalt aeg";
 
 $weekdaynameset = ["esmaspäev", "teisipäev", "kolmapäev", "neljapäev", "reede", "laupäev", "pühapäev"];
@@ -40,6 +41,7 @@ $monthnameset = ["jaanuar", "veebruar", "märts", "aprill", "mai", "juuni", "juu
 //echo $weekdaynameset[1];
 $weekdaynow = date("N");
 $monthnow = date("m");
+$daynow = date("d");
 
 
 if ($hournow < 7) {
@@ -93,7 +95,10 @@ $allfiles = scandir("../vp_pics/");
 //var_dump($allfiles);
 $picfiles = array_slice($allfiles, 2);
 $imghtml = "";
+$pilthtml = "";
 $piccount = count($picfiles);
+$random = mt_rand(0, ($piccount - 1));
+$pilthtml .= '<img src="../vp_pics/' .$picfiles[$random]. '" alt="Tallinna ülikool">';
 //$i = $i + 1;
 //$i ++;
 //$i += 3;
@@ -104,6 +109,8 @@ for($i = 0; $i < $piccount; $i ++) {
 }
 require("header.php");
 
+
+
 ?>
 
 
@@ -112,24 +119,16 @@ require("header.php");
   <p id="esimene">See veebileht on loodud õppetöö käigus ning ei sisalda mingit tõsiseltvõetavat sisu!</p>
   <p id="teine">Leht on loodud veebiprogrammeerimise raames <a href="https://www.tlu.ee" target="_blank">Tallinna Ülikooli</a> Digitehnoloogiate instituudis.</p>
   <p id="kolmas">Siit saad minna otse <a href="https://www.tlu.ee/infotehnoloogiaosakond" target="_blank">TLÜ infotehnoloogiaosakonda.</a></p>
-  <p> Lehe avamise hetkel oli: <?php echo $monthnameset[$monthnow - 1] .", ". $weekdaynameset[$weekdaynow - 1]. ", " . $fulltimenow; ?>.</p>
+  <p> Lehe avamise hetkel oli: <?php echo $weekdaynameset[$weekdaynow - 1] .", ". $daynow .", ".  $monthnameset[$monthnow - 1]. ", kell " . $kellpraegu; ?>.</p>
   <p id="semester"><?php echo "Parajasti on " .$partofday .".";  ?></p>
   <p id="semester"><?php echo "Semestri lõpuni on veel " .$semestrilopuni ." päeva."; ?></p>
   <p id="semester"><?php echo "Semestrist on läbitud " .$paevadprotsentides ." protsenti ehk " .$paevilainud ." päeva."; ?></p>
   <p id="semester"><?php echo $semesterstatus; ?></P>
+  <a href="motetesisestamine.php">Siit saab minna oma mõtteid kirja panema</a><br />
+  <a href="motetelist.php">Siit saad oma kirja pandud mõtteid vaatama minna</a>
   <hr>
-  <?php echo $imghtml; ?>
+  <?php echo $pilthtml; ?>
   <hr>
-  <form method="POST">
-    <label>Kirjutage oma esimene pähe tulev mõte!</label>
-    <input type="text" name="ideainput" placeholder="mõttekoht">
-    <input type="submit" name="ideasubmit" value="Saada mõte teele!">
-  </form>
-  <hr>
-  <?php echo $ideahtml; ?>
-  <img src="/pics/Mountain.jpg" alt="Mäed" id="pic1">
-  <img src="/pics/mäed.jfif" alt="Veel suuremad mäed" id="pic2">
-  <img src="/pics/Magi.jpg" alt="Suur mägi" id="pic3">
   
 
 </body>
