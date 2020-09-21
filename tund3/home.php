@@ -124,8 +124,11 @@ require("header.php");
   <p id="semester"><?php echo "Semestri lõpuni on veel " .$semestrilopuni ." päeva."; ?></p>
   <p id="semester"><?php echo "Semestrist on läbitud " .$paevadprotsentides ." protsenti ehk " .$paevilainud ." päeva."; ?></p>
   <p id="semester"><?php echo $semesterstatus; ?></P>
-  <a href="motetesisestamine.php">Siit saab minna oma mõtteid kirja panema</a><br />
-  <a href="motetelist.php">Siit saad oma kirja pandud mõtteid vaatama minna</a>
+  <ul>
+  <li><a href="motetesisestamine.php">Siit saab minna oma mõtteid kirja panema</a><br /></li>
+  <li><a href="motetelist.php">Siit saad oma kirja pandud mõtteid vaatama minna</a></li>
+  <li><a href="addfilms.php">Filmi info lisamine</a><br /></li>
+  </ul>
   <hr>
   <?php echo $pilthtml; ?>
   <hr>

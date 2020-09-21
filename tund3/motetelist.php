@@ -1,4 +1,7 @@
 <?php
+
+$username = "Martin Kilgi";
+
 //var_dump($_POST);
 require("../../../config.php");
 $database = "if20_martin_kl_2";
@@ -40,6 +43,11 @@ $conn->close();
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<img src="../img/vp_banner.png" alt="Veebiprogrammeerimise kursuse logo">
+  <h1><?php echo $username; ?></h1>
+  <p id="esimene">See veebileht on loodud õppetöö käigus ning ei sisalda mingit tõsiseltvõetavat sisu!</p>
+  <p id="teine">Leht on loodud veebiprogrammeerimise raames <a href="https://www.tlu.ee" target="_blank">Tallinna Ülikooli</a> Digitehnoloogiate instituudis.</p>
+  <p id="kolmas">Siit saad minna otse <a href="https://www.tlu.ee/infotehnoloogiaosakond" target="_blank">TLÜ infotehnoloogiaosakonda.</a></p>
 <h1>Siin kuvatakse teie kirja pandud mõtted!</h1>
 <hr>
   <?php echo $ideahtml; ?>
