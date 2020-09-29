@@ -25,6 +25,12 @@ if (isset($_POST["regsubmit"])) {
   $genderinput = ($_POST["genderinput"]);
   $emailinfo = ($_POST["emailinput"]);
 
+  if (!empty($_POST["passwordinput"])) {
+    $passwordinput = ($_POST["emailinput"]);
+  } else {
+    $passworderror = "Salasõna on sisestamata!";
+  }
+
   if(strlen($_POST["passwordinput"]) < 8) {
     $passworderror = "Salasõna on liiga lühike.";
 } if (($_POST["passwordinput"]) !== ($_POST["passwordsecondaryinput"])) {
