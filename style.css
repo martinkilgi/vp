@@ -1,66 +1,11 @@
 body {
     margin: 40px;
-    background-color: lightblue;
+    background-color: rgb(149, 173, 182);
 }
 
-#semester {
-    font-size: 50px;
-    color:  red;
-}
 
-#pic1 {
-    width: 500px;
-    height: 300px;
-    margin: 50px;
-}
-
-#pic2 {
-    width: 500px;
-    height: 300px;
-    margin: 50px;
-}
-
-#pic3 {
-    width: 500px;
-    height: 300px;
-    margin: 50px;
-}
-
-h1 {
-    
-    font-family: courier;
-    color: red;
-    text-align: center;
-    font-size: 50px;
-    border: 5px solid black;
-
-
-}
-
-#esimene {
-    font-size: 25px;
-    padding: 20px;
-    border: 2px solid black;
-    font-family: verdana;
-    color: black;
-    text-align: justify;
-    margin: 50px;
-}
-
-#teine {
-    font-family: Georgia;
-    padding: 10px;
-    font-size: 25px;
-    text-align: justify;
-    color: red;
-    margin: 50px;
-}
-
-#kolmas {
-    font-family: Georgia;
-    padding: 10px;
-    font-size: 25px;
-    text-align: justify;
-    color: red;
-    margin: 50px;
+#navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
