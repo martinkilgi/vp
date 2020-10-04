@@ -79,6 +79,12 @@
 	  } else {
 		  $emailerror = "Palun sisesta e-postiaadress!";
 	  }
+
+	  if (!filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+		$email = test_input($_POST["emailinput"]);
+	  } else {
+		$emailerror = "Sisestatud tekst ei ole e-mail!";
+	  }
 	  
 	  if (empty($_POST["passwordinput"])){
 		$passworderror = "Palun sisesta salasõna!";

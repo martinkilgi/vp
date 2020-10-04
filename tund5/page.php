@@ -1,36 +1,57 @@
 
 <?php
-//var_dump($_POST);
+
 require("../../../config.php");
-$database = "if20_martin_kl_2";
-if(isset($_POST["ideasubmit"]) and !empty($_POST["ideainput"])) {
-    //loome andmebaasiga ühenduse
-    $conn = new mysqli($serverhost, $serverusername, $serverpassword, $database);
-    //valmistan ette SQL käsu andmete kirjutamiseks
-    $stmt = $conn->prepare("INSERT INTO myideas (idea) VALUES(?)");
-    echo $conn->error;
-    //i - integer, d - decimal ehk murdarv, s - string
-    $stmt->bind_param("s", $_POST["ideainput"]);
-    $stmt->execute();
-    $stmt->close();
-    $conn->close();
+require("fnc_common.php");
+require("fnc_user.php");
+
+//errorite muutujad
+$emailerror = "";
+$passworderror = "";
+$notice = "";
+
+$email = "";
+
+if(isset($_POST["submituserdata"])){
+
+  if (!empty($_POST["emailinput"])){
+		$email = test_input($_POST["emailinput"]);
+	  } else {
+		  $emailerror = "Palun sisesta e-postiaadress!";
+    }
+    
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+      $email = test_input($_POST["emailinput"]);
+    } else {
+      $emailerror = "Sisestatud tekst ei ole e-mail!";
+    }
+	  
+	  if (empty($_POST["passwordinput"])) {
+		  $passworderror = "Palun sisesta salasõna!";
+	  } else {
+		  if(strlen($_POST["passwordinput"]) < 8){
+			  $passworderror = "Liiga lühike salasõna (sisestasite ainult " .strlen($_POST["passwordinput"]) ." märki).";
+		  }
+    }
+    
+    if(empty($firstnameerror) and empty($lastnameerror)) {
+      $result = signin($email, $_POST["passwordinput"]);
+
+      if ($result == "ok") {
+        $notice = "Kasutaja on edukalt loodud!";
+        $firstname= "";
+        $lastname = "";
+        $gender = "";
+        $email = "";
+      } else {
+        $notice = "Kahjuks tekkis tehniline viga: ". $result;
+      }
+    }
+
 }
 
-//loen andmebaasist senised mõtted
-$ideahtml = "";
-$conn = new mysqli($serverhost, $serverusername, $serverpassword, $database);
-$stmt = $conn->prepare("SELECT idea FROM myideas");
-//seon tulemuse muutujaga
-$stmt->bind_result($ideafromdb);
-$stmt->execute();
-while ($stmt->fetch()) {
-    $ideahtml .= "<p>" .$ideafromdb ."</p>";
-}
 
-$stmt->close();
-$conn->close();
-
-$username = "";
+$username = "Koduleht";
 $fulltimenow = date("d.m.Y H:i:s");
 $hournow = date("H");
 $kellpraegu = date("H:i:s");
@@ -116,7 +137,18 @@ require("header.php");
 
   <img src="../img/vp_banner.png" alt="Veebiprogrammeerimise kursuse logo">
   <h1><?php echo $username; ?></h1>
-  <?php require("../nav.php");?>
+  <hr>
+  <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+    <label for="emailinput">E-mail (kasutajatunnus):</label><br>
+	  <input type="email" name="emailinput" id="emailinput" value="<?php echo $email; ?>"><span><?php echo $emailerror; ?></span>
+	  <br>
+	  <br>
+	  <label for="passwordinput">Salasõna (min 8 tähemärki):</label>
+	  <br>
+	  <input name="passwordinput" id="passwordinput" type="password"><span><?php echo $passworderror; ?></span>
+    <br>
+    <input name="submituserdata" type="submit" value="Logi sisse"><span><?php echo "&nbsp; &nbsp; &nbsp;" .$notice; ?></span>
+  </form>
   <p id="esimene">See veebileht on loodud õppetöö käigus ning ei sisalda mingit tõsiseltvõetavat sisu!</p>
   <p id="teine">Leht on loodud veebiprogrammeerimise raames <a href="https://www.tlu.ee" target="_blank">Tallinna Ülikooli</a> Digitehnoloogiate instituudis.</p>
   <p id="kolmas">Siit saad minna otse <a href="https://www.tlu.ee/infotehnoloogiaosakond" target="_blank">TLÜ infotehnoloogiaosakonda.</a></p>
@@ -130,6 +162,7 @@ require("header.php");
   <hr>
   <?php echo $pilthtml; ?>
   <hr>
+  <li><a href="userreg.php">Kasutajat tegema</a></li>
   
 
 </body>
