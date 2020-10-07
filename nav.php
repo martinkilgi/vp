@@ -5,4 +5,5 @@
     <li><a href="motetelist.php">Mõtteid vaatama</a></li>
     <li><a href="listfilms.php">Filmide list</a></li>
     <li><a href="addfilms.php">Filmide lisamine</a></li>
+    <li><a href="userprofile.php">Minu kasutajaprofiil</a></li>
 </nav> 
