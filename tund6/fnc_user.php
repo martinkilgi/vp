@@ -3,39 +3,52 @@
 $database = "if20_martin_kl_2";
 
 function storeuserprofile ($description, $bgcolor, $txtcolor) {
-    $result = null;
+    $notice = null;
     $conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
-    $stmt = $conn->prepare("SELECT vpuserprofiles_id FROM vpuserprofiles WHERE userid = $_SESSION["userid"]");
-    $stmt = bind_param("i", $_SESSION["userid"]);
+    $stmt = $conn->prepare("SELECT vpuserprofiles_id FROM vpuserprofiles WHERE userid = ?");
     echo $conn->error;
+    $stmt->bind_param("i", $_SESSION["userid"]);
+    $stmt->execute();
     
     if($stmt->fetch()) {
         $stmt->close();
         $stmt = $conn->prepare("UPDATE vpuserprofiles SET description = ?, bgcolor = ?, txtcolor = ? WHERE userid = ?");
         echo $conn->error;
-        } else 
-            $stmt = $conn->prepare("INSERT INTO vpuserprofiles (userid, description, bgcolor, txtcolor) VALUES(?, ?, ?, ?");
-            echo $conn->error;
-            $stmt = bind_param($_SESSION["userid"], $description, $bgcolor, $txtcolor);
+        $stmt->bind_param("sssi", $description, $bgcolor, $txtcolor, $_SESSION["userid"]);
+    } else {
+        $stmt->close();
+        $stmt = $conn->prepare("INSERT INTO vpuserprofiles (userid, description, bgcolor, txtcolor) VALUES(?, ?, ?, ?");
+        echo $conn->error;
+        $stmt->bind_param("isss", $_SESSION["userid"], $description, $bgcolor, $txtcolor);
+    }
 
-
-        }
-    
+    if ($stmt->execute()) {
+        $notice = "ok";
+    } else {
+        $notice = $stmt->error;
+    }
+    $stmt->close();
+    $conn->close();
+    return $notice;
 
 }
 
 
-function readuserdescription ($description) {
-    $result = null;
+function readuserdescription () {
+    $notice = null;
     $conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
-    $stmt = $conn->prepare("SELECT description FROM vpuserprofiles WHERE userid = $_SESSION["userid"]");
-    $stmt = bind_param("i", $_SESSION["userid"]);
+    $stmt = $conn->prepare("SELECT description FROM vpuserprofiles WHERE userid = ?");
     echo $conn->error;
+    $stmt->bind_param("i", $_SESSION["userid"]);
+    $stmt->bind_result($descriptionfromdb);
+    $stmt->execute();
 
-
-
-
-
+    if ($stmt->fetch()) {
+        $notice = $descriptionfromdb;
+    }
+    $stmt->close();
+    $conn->close();
+    return $notice;
 }
 
 
@@ -96,14 +109,24 @@ function signin($email, $password) {
 
                 //kasutajaprofiil, tausta ja teksti värv
                 //lugeda andmebaasist kasutaja profiili, kui saab fetch käsuga värvid, siis need, muidu must (#000000) ja valge (#FFFFFF)
-            
-                $_SESSION["userbgcolor"] = "#CCCCCC";
-                $_SESSION["usertxtcolor"] = "#000066";
-                
+                $stmt = $conn->prepare("SELECT bgcolor, txtcolor FROM vpuserprofiles WHERE userid = ?");
+                $stmt->bind_param("i", $_SESSION["userid"]);
+                $stmt->bind_result($bgcolorfromdb, $txtcolorfromdb);
+                $stmt->execute();
+                if ($stmt->fetch()) {
+                    $_SESSION["usertxtcolor"] = $txtcolorfromdb;
+                    $_SESSION["userbgcolor"] = $bgcolorfromdb;
+                } else {
+                    $_SESSION["usertxtcolor"] = "#000000";
+                    $_SESSION["userbgcolor"] = "#FFFFFF";
+                }
 
+                $stmt->close();
                 $conn->close();
                 header("Location: home.php");
                 exit();
+            
+               
             } else {
                 $result = "Kahjuks vale parool!";
             }
@@ -115,11 +138,8 @@ function signin($email, $password) {
         $result = $stmt->error;
     }
 
-
-
     $stmt->close();
     $conn->close();
-
     return $result;
 }
 

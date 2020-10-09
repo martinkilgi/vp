@@ -1,7 +1,7 @@
 <?php
 
 //$username = "Martin Kilgi";
-
+require("fnc_user.php");
 require("usesession.php");
 require("fnc_common.php");
 //var_dump($_POST);
@@ -53,7 +53,7 @@ require("header.php");
     <label for="bgcolorinput">Minu valitud taustavärv: </label>
     <input type="color" name="bgcolorinput" id="bgcolorinput" value="<?php echo $_SESSION["userbgcolor"]; ?>">
     <br>
-    <label for="txtcolorinput">Minu valitud taustavärv: </label>
+    <label for="txtcolorinput">Minu valitud tekstivärv: </label>
     <input type="color" name="txtcolorinput" id="txtcolorinput" value="<?php echo $_SESSION["usertxtcolor"]; ?>">
     <br>
     <input type="submit" name="profilesubmit" value="Salvesta profiil!">
