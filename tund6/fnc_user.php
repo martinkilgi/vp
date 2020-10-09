@@ -17,7 +17,7 @@ function storeuserprofile ($description, $bgcolor, $txtcolor) {
         $stmt->bind_param("sssi", $description, $bgcolor, $txtcolor, $_SESSION["userid"]);
     } else {
         $stmt->close();
-        $stmt = $conn->prepare("INSERT INTO vpuserprofiles (userid, description, bgcolor, txtcolor) VALUES(?, ?, ?, ?");
+        $stmt = $conn->prepare("INSERT INTO vpuserprofiles (userid, description, bgcolor, txtcolor) VALUES(?, ?, ?, ?)");
         echo $conn->error;
         $stmt->bind_param("isss", $_SESSION["userid"], $description, $bgcolor, $txtcolor);
     }

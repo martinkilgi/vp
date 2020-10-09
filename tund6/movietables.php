@@ -7,50 +7,27 @@ require("../../../config.php");
 require("fnc_common.php");
 require("fnc_user.php");
 
-//errorite muutujad
-$emailerror = "";
-$passworderror = "";
-$notice = "";
+$film = null;
 
-$email = "";
 
-if(isset($_POST["submituserdata"])){
 
-  if (!empty($_POST["emailinput"])){
-		$email = test_input($_POST["emailinput"]);
-	  } else {
-		  $emailerror = "Palun sisesta e-postiaadress!";
-    }
-    
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-      $email = test_input($_POST["emailinput"]);
-    } else {
-      $emailerror = "Sisestatud tekst ei ole e-mail!";
-    }
-	  
-	  if (empty($_POST["passwordinput"])) {
-		  $passworderror = "Palun sisesta salasõna!";
-	  } else {
-		  if(strlen($_POST["passwordinput"]) < 8){
-			  $passworderror = "Liiga lühike salasõna (sisestasite ainult " .strlen($_POST["passwordinput"]) ." märki).";
-		  }
-    }
-    
-    if(empty($firstnameerror) and empty($lastnameerror)) {
-      $result = signin($email, $_POST["passwordinput"]);
+$conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
 
-      if ($result == "ok") {
-        $notice = "Kasutaja on edukalt loodud!";
-        $firstname= "";
-        $lastname = "";
-        $gender = "";
-        $email = "";
-      } else {
-        $notice = "Kahjuks tekkis tehniline viga: ". $result;
-      }
-    }
+$stmt = $conn->prepare("SELECT movie_id, title FROM movie");
+$connerror = $conn->error;
+$stmt->bind_result($movieidfromdb, $movietitlefromdb);
+$stmt->execute();
 
-}
+
+#$stmt = $conn->prepare("SELECT genre_id, genre_name FROM genre");
+#stmt->bind_result($genreidfromdb, $genrenamefromdb);
+#$stmt->execute();
+#$stmt->close();
+
+#$conn->close();
+
+
+
 
 
 $username = "Koduleht";
@@ -109,27 +86,6 @@ if ($paevadprotsentides <= 0) {
   $paevadprotsentides = "Semester on läbi";
 }
 
-//if($fromsemesterstartdays < 0) {semester pole peale hakanud)}
-//mitu protsenti õppetööst on tehtud (päevi kokku 105)
-
-
-//Loeme kataloogist piltide nimekirja
-$allfiles = scandir("../vp_pics/");
-//var_dump($allfiles);
-$picfiles = array_slice($allfiles, 2);
-$imghtml = "";
-$pilthtml = "";
-$piccount = count($picfiles);
-$random = mt_rand(0, ($piccount - 1));
-$pilthtml .= '<img src="../vp_pics/' .$picfiles[$random]. '" alt="Tallinna ülikool">';
-//$i = $i + 1;
-//$i ++;
-//$i += 3;
-
-for($i = 0; $i < $piccount; $i ++) {
-  //<img src="../img/pildifail" alt="tekst"
-  $imghtml .= '<img src="../vp_pics/' .$picfiles[$i] .'" alt="Tallinna Ülikool">';
-}
 require("header.php");
 
 
@@ -140,19 +96,32 @@ require("header.php");
   <img src="../img/vp_banner.png" alt="Veebiprogrammeerimise kursuse logo">
   <h1><?php echo "Koduleht"; ?></h1>
   <hr>
+  <p><?php echo $connerror;?>
   <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-    <label for="emailinput">E-mail (kasutajatunnus):</label><br>
-	    <input type="email" name="emailinput" id="emailinput" value="<?php echo $email; ?>"><span><?php echo $emailerror; ?></span>
-	    <br>
-	    <br>
-	    <label for="passwordinput">Salasõna (min 8 tähemärki):</label>
-	    <br>
-	    <input name="passwordinput" id="passwordinput" type="password"><span><?php echo $passworderror; ?></span>
-      <br>
-      <input name="submituserdata" type="submit" value="Logi sisse"><span><?php echo "&nbsp; &nbsp; &nbsp;" .$notice; ?></span>
+    <label for="filminput">Film: </label>
+		  <?php
+			echo '<select name="filminput" id="filminput">' ."\n";
+			echo '<option value="" selected disabled>Vali film</option>' ."\n";
+			while ($stmt->fetch()) {
+				echo '<option value="' .$movietitlefromdb .'"';
+				echo ">" .$movietitlefromdb ."</option> \n";
+			}
+			echo "</select> \n";
+      ?>
+    <label for="genreinput">Žanr: </label>
+		  <?php
+			echo '<select name="genreinput" id="genreinput">' ."\n";
+			echo '<option value="" selected disabled>Vali žanr</option>' ."\n";
+			while ($stmt->fetch()){
+				echo '<option value="' .$movie .'"';
+				if ($i == $movieidfromdb){
+					echo " selected";
+				}
+				echo ">" .$i ."</option> \n";
+			}
+			echo "</select> \n";
+		  ?>
   </form>
-  <hr>
-  <li><a href="userreg.php">Kasutajat tegema</a></li>
   <hr>
   <p id="esimene">See veebileht on loodud õppetöö käigus ning ei sisalda mingit tõsiseltvõetavat sisu!</p>
   <p id="teine">Leht on loodud veebiprogrammeerimise raames <a href="https://www.tlu.ee" target="_blank">Tallinna Ülikooli</a> Digitehnoloogiate instituudis.</p>
@@ -164,8 +133,6 @@ require("header.php");
   <p id="semester"><?php echo $semesterstatus; ?></P>
   <ul>
   </ul>
-  <hr>
-  <?php echo $pilthtml; ?>
   <hr>
   
 

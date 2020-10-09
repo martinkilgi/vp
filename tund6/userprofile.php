@@ -24,6 +24,14 @@ if(isset($_POST["profilesubmit"])) {
     }
   }
 
+  if(!empty($_POST["descriptioninput"])){
+	  $userdescription = test_input($_POST["descriptioninput"]);
+  } else {
+	  $userdescription = readuserdescription();
+  }
+
+
+
 
 
 require("header.php");
@@ -34,7 +42,7 @@ require("header.php");
 <html lang="et">
 <head>
   <meta charset="utf-8">
-  <title><?php echo $username; ?> Mõtete sisestamine</title>
+  <title>Veebiprogrameerimine</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>

@@ -6,4 +6,5 @@
     <li><a href="listfilms.php">Filmide list</a></li>
     <li><a href="addfilms.php">Filmide lisamine</a></li>
     <li><a href="userprofile.php">Minu kasutajaprofiil</a></li>
+    <li><a href="movietables.php">Filmide seoseid tegema</a></li>
 </nav> 
