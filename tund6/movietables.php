@@ -3,32 +3,48 @@
 
 session_start();
 
+if(!isset($_SESSION["userid"])){
+  //jõugu sisselogimise lehele
+  header("Location: page.php");
+}
+
+if(isset($_GET["logout"])){
+  session_destroy();
+   header("Location: page.php");
+   exit();
+}
+
 require("../../../config.php");
 require("fnc_common.php");
 require("fnc_user.php");
+require("fnc_addfilmandgenre.php");
 
 $film = null;
+$connerror = "";
+$notice = "";
+$selectedmovie = "";
+$selectedgenre = "";
+$movieselecthtml = "";
+$moviegenreselecthtml = "";
 
+if(isset($_POST["movierelationsubmit"])){
+	if(!empty($_POST["movieinput"])){
+		$selectedmovie = intval($_POST["movieinput"]);
+	} else {
+		$notice = " Vali film!";
+	}
+	if(!empty($_POST["moviegenreinput"])){
+		$selectedgenre = intval($_POST["moviegenreinput"]);
+	} else {
+		$notice .= " Vali žanr!";
+	}
+	if(!empty($selectedmovie) and !empty($selectedgenre)){
+		$notice = storenewgenrerelation($selectedmovie, $selectedgenre);
+	}
+  }
 
-
-$conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
-
-$stmt = $conn->prepare("SELECT movie_id, title FROM movie");
-$connerror = $conn->error;
-$stmt->bind_result($movieidfromdb, $movietitlefromdb);
-$stmt->execute();
-
-
-#$stmt = $conn->prepare("SELECT genre_id, genre_name FROM genre");
-#stmt->bind_result($genreidfromdb, $genrenamefromdb);
-#$stmt->execute();
-#$stmt->close();
-
-#$conn->close();
-
-
-
-
+$movieselecthtml = readmovie($selectedmovie);
+$moviegenreselecthtml = readgenre($selectedgenre);
 
 $username = "Koduleht";
 $fulltimenow = date("d.m.Y H:i:s");
@@ -98,29 +114,15 @@ require("header.php");
   <hr>
   <p><?php echo $connerror;?>
   <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-    <label for="filminput">Film: </label>
+  <label for="movieinput">Film: </label>
 		  <?php
-			echo '<select name="filminput" id="filminput">' ."\n";
-			echo '<option value="" selected disabled>Vali film</option>' ."\n";
-			while ($stmt->fetch()) {
-				echo '<option value="' .$movietitlefromdb .'"';
-				echo ">" .$movietitlefromdb ."</option> \n";
-			}
-			echo "</select> \n";
-      ?>
-    <label for="genreinput">Žanr: </label>
-		  <?php
-			echo '<select name="genreinput" id="genreinput">' ."\n";
-			echo '<option value="" selected disabled>Vali žanr</option>' ."\n";
-			while ($stmt->fetch()){
-				echo '<option value="' .$movie .'"';
-				if ($i == $movieidfromdb){
-					echo " selected";
-				}
-				echo ">" .$i ."</option> \n";
-			}
-			echo "</select> \n";
+        echo $movieselecthtml;
 		  ?>
+  <label for="moviegenreinput">Žanr: </label>
+      <?php 
+        echo $moviegenreselecthtml;
+      ?>
+      <input type="submit" name="movierelationsubmit" value="Salvesta"><span><?php echo $notice; ?></span>
   </form>
   <hr>
   <p id="esimene">See veebileht on loodud õppetöö käigus ning ei sisalda mingit tõsiseltvõetavat sisu!</p>
