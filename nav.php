@@ -8,4 +8,5 @@
     <li><a href="userprofile.php">Minu kasutajaprofiil</a></li>
     <li><a href="filmandgenre.php">Filmide seoseid tegema</a></li>
     <li><a href="listfilmpersons.php">Filmide tegelased</a></li>
+    <li><a href="photoupload.php">Galeriipiltide üleslaadimine</a></li>
 </nav> 
