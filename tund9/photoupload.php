@@ -5,7 +5,7 @@
   require("fnc_common.php");
   require("classes/Photoupload_class.php");
     
-  $inputerror = "";
+  $error = "";
   $notice = "";
   $fileuploadsizelimit = 2097152;//1048576;
   $fileuploaddir_orig = "../photoupload_orig/";
@@ -19,6 +19,7 @@
   $privacy = 1;
   $alttext = null;
   $watermark = "../img/vp_logo_w100_overlay.png";
+  $photofiletypes = ["image/jpeg", "image/png", "image/gif"];
   
   //kas vajutati salvestusnuppu
   if(isset($_POST["photosubmit"])){
@@ -26,88 +27,79 @@
 	//var_dump($_FILES);
 	$privacy = intval($_POST["privinput"]);
 	$alttext = test_input($_POST["altinput"]);
+	if(isset($FILES_["photoinput"]["tmp_name"])) {
 	
-	//kas on üldse pilt
-	$check = getimagesize($_FILES["photoinput"]["tmp_name"]);
-	if($check !== false){
-		//var_dump($check);
-		if($check["mime"] == "image/jpeg"){
-			$filetype = "jpg";
-		}
-		if($check["mime"] == "image/png"){
-			$filetype = "png";
-		}
-		if($check["mime"] == "image/gif"){
-			$filetype = "gif";
-		}
-	} else {
-		$inputerror = "Valitud fail ei ole pilt!";
-	}
-	
-	//genereerime failinime
-	$timestamp = microtime(1) * 10000;
-	$filename = $filenameprefix .$timestamp ."." .$filetype;
-	
-	//kas fail on olemas
-	if(file_exists($fileuploaddir_orig .$filename)){
-		$inputerror .= " Sellise nimega fail on juba olemas!";
-	}
-	
-	if(empty($inputerror)){
-    // Võtame kasutusele Photoupload klassi
-    $myphoto = new Photoupload($_FILES["photoinput"], $filetype);
-
-    //kui vigu pole, salvestame originaalpildi
-    $myphoto->moveOriginalimage($fileuploaddir_orig .$filename);
+		//genereerime failinime
+		$myphoto->generateFileName($filenameprefix, $filetype);
 		
-		//muudame suurust
-    //$mynewimage = resizePhoto($mytempimage, $photomaxw, $photomaxh, true);
-
-    $myphoto->resizePhoto($photomaxw, $photomaxh, true);
-    $myphoto->addWatermark($watermark);
-
-    //ega pole liiga suur fail
-    $myphoto->testFileSize();
-    //$inputerror .= " Valitud fail on liiga suur!";
-
-		//salvestame vähendatud pildi faili
-    //$result = savePhotoFile($mynewimage, $filetype, $fileuploaddir_normal .$filename);
-    $result = $myphoto->savePhotoFile($fileuploaddir_normal .$filename);
-		if($result == 1){
-			$notice .= "Vähendatud pildi salvestamine õnnestus!";
-		} else {
-			$inputerror .= "Vähendatud pildi salvestamisel tekkis tõrge!";
-		}
+		//kas fail on olemas
+		//if(file_exists($fileuploaddir_orig .$filename)){                           //pole hetkel vaja kasutada
+			//$error .= " Sellise nimega fail on juba olemas!";
+		//}
 		
-		
-		//pisipildi tegemine ja salvestamine
-    //$mynewimage = resizePhoto($mytempimage, $thumbsize, $thumbsize);
-    $myphoto->resizePhoto($thumbsize, $thumbsize);
-    //$result = savePhotoFile($mynewimage, $filetype, $fileuploaddir_thumb .$filename);
-    $result = $myphoto->savePhotoFile($fileuploaddir_thumb .$filename);
-		if($result == 1){
-			$notice .= "Pisipildi salvestamine õnnestus!";
-		} else {
-			$inputerror .= "Pisipildi salvestamisel tekkis tõrge!";
-		}
-		
-		//kui vigu pole, salvestame info andmebaasi
-		if(empty($inputerror)){
-			$result = storePhotoData($filename, $alttext, $privacy);
-			if($result == 1){
-				$notice .= " Pildi info lisati andmebaasi!";
-				$privacy = 1;
-				$alttext = null;
+		if(empty($error)) {
+			// Võtame kasutusele Photoupload klassi
+			$myphoto = new Photoupload($_FILES["photoinput"], $filetype);
+			
+			//kas on üldse pilt
+			$myphoto->isItImage($photofiletypes);
+
+			//kui vigu pole, salvestame originaalpildi
+			$myphoto->moveOriginalimage($fileuploaddir_orig .$filename);
+				if($notice == 1) {
+					$notice .= "Originaalpildi salvestamine õnnestus!";
+				} else {
+					$error .= "Originaalpildi salevastimsel tekkis tõrge!";
+				}
+				
+			//muudame suurust
+			//$mynewimage = resizePhoto($mytempimage, $photomaxw, $photomaxh, true);
+
+			$myphoto->resizePhoto($photomaxw, $photomaxh, true);
+			$myphoto->addWatermark($watermark);
+
+			//ega pole liiga suur fail
+			$myphoto->testFileSize($photofiletypes);
+
+			//salvestame vähendatud pildi faili
+			//$result = savePhotoFile($mynewimage, $filetype, $fileuploaddir_normal .$filename);
+			$result = $myphoto->savePhotoFile($fileuploaddir_normal .$filename);
+				if($result == 1){
+					$notice .= "Vähendatud pildi salvestamine õnnestus!";
+				} else {
+					$error .= "Vähendatud pildi salvestamisel tekkis tõrge!";
+				}
+				
+				
+				//pisipildi tegemine ja salvestamine
+			//$mynewimage = resizePhoto($mytempimage, $thumbsize, $thumbsize);
+			$myphoto->resizePhoto($thumbsize, $thumbsize);
+			//$result = savePhotoFile($mynewimage, $filetype, $fileuploaddir_thumb .$filename);
+			$result = $myphoto->savePhotoFile($fileuploaddir_thumb .$filename);
+				if($result == 1){
+					$notice .= "Pisipildi salvestamine õnnestus!";
+				} else {
+					$error .= "Pisipildi salvestamisel tekkis tõrge!";
+				}
+				
+			//kui vigu pole, salvestame info andmebaasi
+			if(empty($error)){
+				$result = storePhotoData($filename, $alttext, $privacy);
+				if($result == 1){
+					$notice .= " Pildi info lisati andmebaasi!";
+					$privacy = 1;
+					$alttext = null;
+				} else {
+					$error .= " Pildi info andmebaasi salvestamisel tekkis tõrge!";
+				}
 			} else {
-				$inputerror .= " Pildi info andmebaasi salvestamisel tekkis tõrge!";
+				$error .= " Tekkinud vigade tõttu pildi andmeid ei salvestatud!";
 			}
-		} else {
-			$inputerror .= " Tekkinud vigade tõttu pildi andmeid ei salvestatud!";
-    }
-    
-    unset($myphoto);
+			unset($myphoto);
+		
+				}
 	}
-  }
+  } 
   
   
   require("header.php");
@@ -141,7 +133,7 @@
   </form>
   <p>
   <?php
-	echo $inputerror;
+	echo $error;
 	echo $notice;
   ?>
 	</p>

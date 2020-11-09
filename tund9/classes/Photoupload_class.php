@@ -4,8 +4,8 @@
         private $imagetype;
         private $mytempimage;
         private $mynewtempimage;
+        private $uploadedphoto;
         public $fileuploadsizelimit;
-        public $inputerror;
         public $notice;
 
         function __construct($photoinput, $filetype) {
@@ -115,22 +115,52 @@
             return $notice;
         }
 
-        public function testFileSize() {
-            if($this->photoinput["size"] > $this->fileuploadsizelimit){
-                $this->inputerror .= " Valitud fail on liiga suur!";
-            }
-            return $this->inputerror;
+        public function testFileSize($photofiletypes) {
+            $fileInfo = getImagesize($this->photoinput["tmp_name"]);
+            if(in_array($fileInfo["mime"], $photofiletypes)) {
+                if($this->photoinput["size"] > $this->fileuploadsizelimit){
+                    $this->inputerror .= " Valitud fail on liiga suur!";
+                }
+                return $this->inputerror;
+        }
         }
 
         public function moveOriginalimage($target) {
             //Kui vigu pole, salvestame originaalpildi
-            if(empty($this->inputerror)){
-                if(move_uploaded_file($this->photoinput["tmp_name"], $target)){
-                    $this->notice .= " Originaalpildi salvestamine õnnestus!";
-                } else {
-                    $this->inputerror .= " Originaalpildi salvestamisel tekkis viga!";
-                }
+            $notice = null;
+            $error = null;
+            if(move_uploaded_file($this->photoinput["tmp_name"], $target)){
+                $notice .= 1;
+            } else {
+                $error .= 0;
             }
+            return $notice;
+            
+        }
+
+        public function isItImage($photofiletypes) {
+            $check = getimagesize($this->photoinput["tmp_name"]);
+            if(in_array($check["mime"], $photofiletypes)){
+                //var_dump($check);
+                if($check["mime"] == "image/jpeg"){
+                    $this->filetype = "jpg";
+                }
+                if($check["mime"] == "image/png"){
+                    $this->filetype = "png";
+                }
+                if($check["mime"] == "image/gif"){
+                    $this->filetype = "gif";
+                }
+            } else {
+                $this->inputerror = "Valitud fail ei ole pilt!";
+            }
+                }
+
+        public function generateFileName($filenameprefix, $filetype) {
+            //genereerime failinime
+	        $timestamp = microtime(1) * 10000;
+            $filename = $filenameprefix .$timestamp ."." .$filetype;
+            return $filename;
         }
 
 
