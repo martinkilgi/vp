@@ -3,51 +3,21 @@
 		private $photoinput;
 		private $imagetype;
 		private $mytempimage;
-		private $allowedImageTypes;
-		private $fileUploadSizeLimit;
 		private $mynewtempimage;
-		private $fileName;
 		
-		function __construct($photoinput, $allowedImageTypes, $fileUploadSizeLimit){
+		function __construct($photoinput, $filetype){
 			$this->photoinput = $photoinput;
-			$this->allowedImageTypes = $allowedImageTypes;
-			$this->fileUploadSizeLimit = $fileUploadSizeLimit;
+			$this->imagetype  = $filetype;
 			//var_dump($this->photoinput);
+			$this->createImageFromfile();
 		}
 		
 		function __destruct(){
 			imagedestroy($this->mytempimage);
 		}
-
-		public function setImageType() {
-			$result = "";
-			$fileInfo = getimagesize($this->photoinput["tmp_name"]);
-			if (in_array($fileInfo["mime"], $this->allowedImageTypes)) {
-				$splitType = explode("/", $fileInfo["mime"]);
-				$this->imagetype = $splitType[1];
-			}
-			else {
-				$result = "Tundmatu/mitte lubatud faili tyyp";
-			}
-
-			return $result;
-		}
-
-		public function checkSize() {
-			$result = "";
-			if($this->photoinput["size"] > $this->fileUploadSizeLimit){
-				$result .= " Valitud fail on liiga suur!";
-			}
-			return $result;
-		}
-
-		public function generateFileName($filenameprefix) {
-			$timestamp = microtime(1) * 10000;
-			$this->fileName = $filenameprefix .$timestamp ."." .$this->imagetype;
-		}
 		
-		public function createImageFromFile(){
-			if($this->imagetype == "jpg" || $this->imagetype == "jpeg"){
+		private function createImageFromfile(){
+			if($this->imagetype == "jpg"){
 				$this->mytempimage = imagecreatefromjpeg($this->photoinput["tmp_name"]);
 			}
 			if($this->imagetype == "png"){
@@ -56,14 +26,6 @@
 			if($this->imagetype == "gif"){
 				$this->mytempimage = imagecreatefromgif($this->photoinput["tmp_name"]);
 			}
-		}
-
-		public function exists($fileuploaddir_orig) {
-			$result = "";
-			if(file_exists($fileuploaddir_orig .$this->fileName)){
-				$result .= " Sellise nimega fail on juba olemas!";
-			}
-			return $result;
 		}
 		
 		public function resizePhoto($w, $h, $keeporigproportion = true){
@@ -124,22 +86,22 @@
 		
 		public function savePhotoFile($target){
 			$notice = null;
-			if($this->imagetype == "jpg" || $this->imagetype == "jpeg"){
-				if(imagejpeg($this->mynewtempimage, $target .$this->fileName, 90)){
+			if($this->imagetype == "jpg"){
+				if(imagejpeg($this->mynewtempimage, $target, 90)){
 					$notice = 1;
 				} else {
 					$notice = 0;
 				}
 			}
 			if($this->imagetype == "png"){
-				if(imagepng($this->mynewtempimage, $target .$this->fileName, 6)){
+				if(imagepng($this->mynewtempimage, $target, 6)){
 					$notice = 1;
 				} else {
 					$notice = 0;
 				}
 			}
 			if($this->imagetype == "gif"){
-				if(imagegif($this->mynewtempimage, $target .$this->fileName)){
+				if(imagegif($this->mynewtempimage, $target)){
 					$notice = 1;
 				} else {
 					$notice = 0;
@@ -151,29 +113,19 @@
 		
 		public function saveOriginalPhoto($target){
 			$notice = null;
-			if(move_uploaded_file($this->photoinput["tmp_name"], $target .$this->imagetype)){
+			if(move_uploaded_file($this->photoinput["tmp_name"], $target)){
 				$notice = 1;
 			} else {
 				$notice = 0;
 			}
 			return $notice;
-		}
-        
-        public function storePhotoData($alttext, $privacy){
-            $notice = null;
-            $conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
-            $stmt = $conn->prepare("INSERT INTO vpphotos (userid, filename, alttext, privacy) VALUES (?, ?, ?, ?)");
-            echo $conn->error;
-            $stmt->bind_param("issi", $_SESSION["userid"], $this->fileName, $alttext, $privacy);
-            if($stmt->execute()){
-                $notice = 1;
-            } else {
-                //echo $stmt->error;
-                $notice = 0;
-            }
-            $stmt->close();
-            $conn->close();
-            return $notice;
         }
-
-	}
+        
+        public function fileExistence($target) {
+            $inputerror = null;
+            if(file_exists($target)){
+                $inputerror .= " Sellise nimega fail on juba olemas!";
+            }
+        }
+		
+	}//class lõppeb
