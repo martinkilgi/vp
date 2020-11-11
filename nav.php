@@ -9,5 +9,6 @@
     <li><a href="filmandgenre.php">Filmide seoseid tegema</a></li>
     <li><a href="listfilmpersons.php">Filmide tegelased</a></li>
     <li><a href="photoupload_baas.php">Galeriipiltide üleslaadimine(baas)</a></li>
-    <li><a href="photoupload.php">Galeriipiltide üleslaadimine</a></li>
+    <li><a href="photoupload.php">Galeriipiltide üleslaadimine</a></li><li>
+    <li><a href="photogallery_public.php">Avalike piltide galerii</a></li>
 </nav> 
