@@ -11,4 +11,5 @@
     <li><a href="photoupload_baas.php">Galeriipiltide üleslaadimine(baas)</a></li>
     <li><a href="photoupload.php">Galeriipiltide üleslaadimine</a></li><li>
     <li><a href="photogallery_public.php">Avalike piltide galerii</a></li>
+    <li><a href="photogallery_private.php">Privaatsete piltide galerii</a></li>
 </nav> 
