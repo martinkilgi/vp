@@ -2,6 +2,7 @@
 <?php
 require("usesession.php");
 require("classes/Generic_class.php");
+require("fnc_photo.php");
 
 //testime klassi kasutamist
 //$myfirstclass = new Generic(8);
@@ -39,6 +40,8 @@ while ($stmt->fetch()) {
 
 $stmt->close();
 $conn->close();
+
+$uusimpilt = maxIdPhoto(2);
 
 $username = "";
 $fulltimenow = date("d.m.Y H:i:s");
@@ -147,7 +150,11 @@ require("header.php");
   <ul>
   </ul>
   <hr>
-  <?php echo $pilthtml; ?>
+  <?php
+   echo $pilthtml;
+   echo $uusimpilt;
+
+  ?>
   <hr>
   <?php 
     if(count($_COOKIE) > 0) {

@@ -1,3 +1,4 @@
+
 <?php
 	$database = "if20_martin_kl_2";
 
@@ -130,5 +131,59 @@
 		$conn->close();
 		return $thumbshtml;
 
+
+	}
+
+	function maxIdPhoto($privacy) {
+		//$thumbshtml = "<p>Kahjuks fotosid ei leitud!</p> \n";
+		$conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
+		$stmt = $conn->prepare("SELECT filename, alttext FROM vpphotos WHERE vpphotos_id=(SELECT MAX(vpphotos_id) FROM vpphotos WHERE privacy=? AND deleted IS NULL)");
+		echo $conn->error;
+		$stmt->bind_param("i", $privacy);
+		$stmt->bind_result($filenamefromdb, $alttextfromdb);
+		$stmt->execute();
+		$temphtml = null;
+		//<img src="failinimi.laiend" alt="tekst">
+		while ($stmt->fetch()) {
+			$temphtml .= '<img src="../photoupload_normal/' .$filenamefromdb .'" alt="' .$alttextfromdb .'">' ."\n";
+		}
+		if(!empty($temphtml)) {
+			$thumbshtml = "<div> \n" .$temphtml ."</div> \n";
+		}
+		$stmt->close();
+		$conn->close();
+		return $thumbshtml;
+
+
+	}
+
+	function PhotoIdFromDb($failinimi) {
+		//$thumbshtml = "<p>Kahjuks fotosid ei leitud!</p> \n";
+		$conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
+		$stmt = $conn->prepare("SELECT vpphotos_id FROM vpphotos WHERE filename = ?");
+		echo $conn->error;
+		$stmt->bind_param("s", $failinimi);
+		$stmt->bind_result($idfromdb);
+		$stmt->execute();
+		$failiid = $idfromdb;
+		$stmt->close();
+		$conn->close();
+		return $failiid;
+
+	}
+
+
+	function PhotoNameFromDb($photoid) {
+		//$thumbshtml = "<p>Kahjuks fotosid ei leitud!</p> \n";
+		$conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
+		$stmt = $conn->prepare("SELECT filename FROM vpphotos WHERE vpphotos_id = ?");
+		echo $conn->error;
+		$stmt->bind_param("i", $photoid);
+		$stmt->bind_result($filenamefromdb);
+		$stmt->execute();
+		$failinimi = $filenamefromdb;
+		$stmt->close();
+		$conn->close();
+		return $failinimi;
 
 	}

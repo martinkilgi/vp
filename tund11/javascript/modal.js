@@ -12,7 +12,8 @@ window.onload = function(){
 	for (let i = 0; i < allThumbs.length; i ++){
 		allThumbs[i].addEventListener("click", openModal);
 	}
-	document.getElementById("modalclose").addEventListener("click", closeModal);
+    document.getElementById("modalclose").addEventListener("click", closeModal);
+    document.getElementById("modalimg").addEventListener("click", closeModal);
 	document.getElementById("storeRating").addEventListener("click", storeRating);
 }
 
