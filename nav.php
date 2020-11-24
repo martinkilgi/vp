@@ -12,4 +12,5 @@
     <li><a href="photoupload.php">Galeriipiltide üleslaadimine</a></li><li>
     <li><a href="photogallery_public.php">Avalike piltide galerii</a></li>
     <li><a href="photogallery_private.php">Privaatsete piltide galerii</a></li>
+    <li><a href="addnews.php">Uudiste lisamine</a></li>
 </nav> 
