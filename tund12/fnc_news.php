@@ -3,20 +3,19 @@
     $database = "if20_martin_kl_2";
 
     function storeNewsData($title, $content){
-		$notice = null;
+		$result = null;
 		$conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
 		$stmt = $conn->prepare("INSERT INTO vpnews (userid, title, content) VALUES (?, ?, ?)");
 		echo $conn->error;
 		$stmt->bind_param("iss", $_SESSION["userid"], $title, $content);
 		if($stmt->execute()){
-			$notice = 1;
+			$result = 1;
 		} else {
-			//echo $stmt->error;
-			$notice = 0;
+			$result = 0;
 		}
 		$stmt->close();
 		$conn->close();
-		return $notice;
+		return $result;
     }
     
     function readNewsData(){
@@ -34,4 +33,21 @@
 		$stmt->close();
 		$conn->close();
 		return $newshtml;
+	}
+
+	function addPhotoData($filename, $alttext){
+		$notice = null;
+		$conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
+		$stmt = $conn->prepare("INSERT INTO vpnewsphotos (userid, filename, alttext) VALUES (?, ?, ?)");
+		echo $conn->error;
+		$stmt->bind_param("iss", $_SESSION["userid"], $filename, $alttext);
+		if($stmt->execute()){
+			$notice = 1;
+		} else {
+			$notice = 0;
+		}
+		$stmt->close();
+		$conn->close();
+		return $notice;
+
 	}

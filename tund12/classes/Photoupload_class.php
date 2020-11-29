@@ -174,6 +174,23 @@
             $stmt->close();
             $conn->close();
             return $notice;
-        }
+		}
+		
+		public function addPhotoData($filename, $alttext){
+			$notice = null;
+			$conn = new mysqli($GLOBALS["serverhost"], $GLOBALS["serverusername"], $GLOBALS["serverpassword"], $GLOBALS["database"]);
+			$stmt = $conn->prepare("INSERT INTO vpnewsphotos (userid, filename, alttext) VALUES (?, ?, ?)");
+			echo $conn->error;
+			$stmt->bind_param("iss", $_SESSION["userid"], $filename, $alttext);
+			if($stmt->execute()){
+				$notice = 1;
+			} else {
+				$notice = 0;
+			}
+			$stmt->close();
+			$conn->close();
+			return $notice;
+	
+		}
 
 	}

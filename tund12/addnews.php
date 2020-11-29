@@ -3,7 +3,7 @@
   require("../../config.php");
   require("fnc_news.php");
   require("fnc_common.php");
-  //require("classes/Photoupload_class.php");	
+  require("classes/Photoupload_class.php");	
 
 	$tolink = "\t" .'<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>' ."\n";
 	$tolink .= "\t" .'<script>tinymce.init({selector:"textarea#newsinput", plugins: "link", menubar: "edit",});</script>' ."\n";
@@ -15,11 +15,19 @@
   $expire = "";
   $photomaxw = 600;
   $photomaxh = 400;
+  $fileuploaddir_news = "../photoupload_news/";
+  $fileuploadsizelimit = 2097152;//1048576
+  $allowed_photo_types = ["image/jpeg", "image/png", "image/gif"];
+  $filename = "";
+  $filenameprefix = "vp_";
+  $alttext = null;
 
   //$savenews = storeNewsData($newstitle, $news);
   
   //kas vajutati salvestusnuppu
   if(isset($_POST["newssubmit"])){
+	$alttext = test_input($_POST["altinput"]);
+
 	if(strlen($_POST["newstitleinput"]) == 0) {
 		$inputerror = "Uudise pealkiri on puudu!";
 	} else {
@@ -34,13 +42,51 @@
 		//uudiste puhul originaalpilti ei salvesta, tee 600x400
 	}
 
+	$myphoto = new Photoupload($_FILES["newsphotoinput"], $allowed_photo_types, $fileuploadsizelimit);
+
+	//kas on üldse pilt
+	$inputerror .= $myphoto->setImageType();
+	
+	//ega pole liiga suur fail
+	$inputerror .= $myphoto->checkSize();
+	
+	//genereerime failinime
+	$myphoto->generateFileName($filenameprefix);
+	
+	//kas fail on olemas
+	$inputerror .= $myphoto->exists($fileuploaddir_news);
+
 	if(empty($inputerror)) {
 		//uudis salvestada
 		$result = storeNewsData($newstitle, $news);
+		
 		if($result == 1) {
 			$notice .= "Uudise salvestamine õnnestus!";
 		} else {
 			$inputerror .= "Uudise salvestamine ebaõnnestus!";
+		}
+
+		$myphoto->createImageFromFile();
+		$myphoto->resizePhoto($photomaxw, $photomaxh, true);
+
+		$result = $myphoto->savePhotoFile($fileuploaddir_news); 
+
+		if($result == 1){
+			$notice .= "Uudisepildi salvestamine õnnestus!";
+		} else {
+			$inputerror .= "Uudisepildi salvestamisel tekkis tõrge!";
+		}
+
+		$result = $myphoto->addPhotoData($filename, $alttext);
+			if($result == 1){
+				$notice .= " Pildi info lisati andmebaasi!";
+				$privacy = 1;
+				$alttext = null;
+			} else {
+				$inputerror .= " Pildi info andmebaasi salvestamisel tekkis tõrge!";
+			}
+		} else {
+			$inputerror .= " Tekkinud vigade tõttu pildi andmeid ei salvestatud!";
 		}
 
 	}
@@ -88,7 +134,7 @@
 // 		}
 //    
 //   SORTEERI JA VAATA, MIS ON VAJA ALLES JÄTTA JA TEE PILDI SALVESTAMISE FUNKTSIOON.
-  }
+  
 
   
   require("header.php");

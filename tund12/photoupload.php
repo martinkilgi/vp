@@ -13,6 +13,7 @@
   $fileuploaddir_orig = "../photoupload_orig/";
   $fileuploaddir_normal = "../photoupload_normal/";
   $fileuploaddir_thumb = "../photoupload_thumb/";
+  $fileuploaddir_news = "../photoupload_news/";
   $filename = "";
   $filenameprefix = "vp_";
   $photomaxw = 600;
