@@ -13,4 +13,5 @@
     <li><a href="photogallery_public.php">Avalike piltide galerii</a></li>
     <li><a href="photogallery_private.php">Privaatsete piltide galerii</a></li>
     <li><a href="addnews.php">Uudiste lisamine</a></li>
+    <li><a href="listnews.php">Uudiste muutmine ja kustutamine</a></li>
 </nav> 
